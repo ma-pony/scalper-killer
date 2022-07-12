@@ -1,5 +1,6 @@
 import base64
 from collections import namedtuple
+from pprint import pprint
 
 import requests
 from Crypto.Cipher import AES
@@ -20,14 +21,13 @@ class ZhengZaiShow:
             raise ConnectionError(data)
 
     def __init__(self):
-        self.show_list = []
+        self.shows = []
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36",
             "Content-Type": "application/json;charset=UTF-8",
             "Accept": "application/json, text/plain, */*",
             "Origin": "https://m.zhengzai.tv",
             "Sec-Fetch-Site": "same-site",
-
         }
         self.cookies = {
             "zztvCity": "%E4%B8%8A%E6%B5%B7",
@@ -60,6 +60,8 @@ class ZhengZaiShow:
         "token":"eyJhbGciOiJIUzI1NiJ9..4N2p3snkvMuG5IFYAIVTA2leEG5EIPzkv4dYOexWwoY",
         "userInfo":{"uid":"1326917","mobile":"151****8090","passwd":None,"nickname":"PONY","state":1,"sex":{"val":"MS00","desc":"保密"},"birthday":None,"area":"上海市 上海城区 黄浦区","signature":"别看了，赶紧冲","avatar":"http://pic.zhengzai.tv/202008/4E/7D/1598671098959_04DD59987152BCF56544D7909C505470.jpg","background":"http://pic.zhengzai.tv/default/background.png","tagMe":None,"createAt":"2020-08-29 11:17:34","updatedAt":"2021-10-08 20:51:38","closedAt":None,"isComplete":1,"rongCloudToken":"GwaCX355L3nKhm68RaduEVkrQdBid64OMQEaKX7YEzo=@zpqb.cn.rongnav.com;zpqb.cn.rongcfg.com","qrCode":"21122348090","stageMarker":11,"province":"山东","city":"青岛","county":None},"userMemberVo":{"memberId":"1","memberNo":"0003329","state":1,"expiryAt":"2023-01-04 23:59:59","createdAt":"2020-10-22 23:35:59","updatedAt":"2022-01-04 14:40:15"},"wechatOpenid":None,"wechatUnionid":None},"success":True}
 
+        eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzI2OTE3IiwiY19hdCI6IjIwMjAwODI5MTExNzM0IiwibW9iaWxlIjoiMTUxOTI3NDgwOTAiLCJuaWNrbmFtZSI6IlBPTlkiLCJ0eXBlIjoidXNlciIsImV4cCI6MTY2MDIxNTIzNiwiaWF0IjoxNjU3NjIzMjM2fQ.bgj-cqKlXoyfkuSFtfJO6CU3bAy3s3wFv-_ZuiweMHE
+
         将token写到cookie中
 
         json
@@ -73,6 +75,9 @@ class ZhengZaiShow:
         uri = "https://adam.zhengzai.tv/adam/login/sms"
         response = requests.post(uri, params={"mobile": str(phone), "code": code}, headers=self.headers)
         res = response.json()
+        print('=' * 10)
+        print(res)
+        print('=' * 10)
         success = res.get("success")
 
     def set_cookies(self, res: dict):
@@ -148,11 +153,14 @@ class ZhengZaiShow:
         }
         uri = "https://kylin.zhengzai.tv/kylin/performance/localList"
         response = self.get(uri, params=params)
-        self.show_list = response["data"]["list"]
+        print('=' * 100)
+        pprint(response["data"])
+        print('=' * 100)
+        self.shows = response["data"]["list"]
 
     def get_show_space(self, road_show_id: int):
         """
-
+        jip
         :return:
         """
         d = {"code": "0", "message": None, "data": [
@@ -221,6 +229,134 @@ class ZhengZaiShow:
             pass
 
         # 获取票种
+
+    def get_show_detail(self, preformances_id):
+        """
+        根据演出的ID获取演出票类型及其价格
+        :param preformances_id:
+        :return:
+        {
+    "code": "0",
+    "message": null,
+    "data": {
+        "ticketTimesList": [
+            {
+                "mid": 2100,
+                "ticketTimesId": "1368976800792535041612431",
+                "title": "2022-07-24 00:00",
+                "type": 1,
+                "performanceId": "1368976800498933765198948",
+                "timeId": "1368976800792535041612431",
+                "useStart": "2022-07-24 00:00:00",
+                "useEnd": "2022-07-24 00:00:00",
+                "ticketList": [
+                    {
+                        "mid": 4719,
+                        "ticketsId": "1368976801002250246812316",
+                        "timeId": "1368976800792535041612431",
+                        "title": "预售票",
+                        "type": 1,
+                        "price": 120.00,
+                        "priceExpress": 0.00,
+                        "memberPrice": 120.00,
+                        "discountPrice": 120.00,
+                        "describes": "",
+                        "describeExpress": "",
+                        "describeElectronic": "身份证电子票下单后不可退票不可转让，因“不可抗力”导致的演出取消或延期除外。电子票需身份证实名购票，请务必准确填写信息，下单后无法更改。演出当日购票人须持本人身份证原件入场。",
+                        "timeStart": "2022-07-07 19:00:00",
+                        "timeEnd": "2022-07-24 00:00:00",
+                        "memberTimeStart": "2022-07-07 18:55:00",
+                        "timeEndExpress": "2022-07-07 18:28:40",
+                        "useStart": "2022-07-24 00:00:00",
+                        "useEnd": "2022-07-24 00:00:00",
+                        "saleRemindMinute": 60,
+                        "isStudent": 0,
+                        "isElectronic": 1,
+                        "isExpress": 0,
+                        "sysDamai": 0,
+                        "counts": 1,
+                        "status": 6,
+                        "statusExchange": 7,
+                        "isLackRegister": 0,
+                        "expressType": 0,
+                        "isTrueName": 1,
+                        "limitCount": 0,
+                        "limitCountMember": 1,
+                        "isExclusive": 0,
+                        "isMember": 1,
+                        "isMemberStatus": 1,
+                        "isAgent": 0,
+                        "isShowCode": 1,
+                        "qrCodeShowTime": "2022-07-24 18:00:00",
+                        "advanceMinuteMember": 5,
+                        "totalGeneral": 100,
+                        "totalExchange": 0
+                    },
+                    {
+                        "mid": 4720,
+                        "ticketsId": "1368976801295851523466360",
+                        "timeId": "1368976800792535041612431",
+                        "title": "现场票",
+                        "type": 1,
+                        "price": 150.00,
+                        "priceExpress": 0.00,
+                        "memberPrice": 150.00,
+                        "discountPrice": 150.00,
+                        "describes": "",
+                        "describeExpress": "",
+                        "describeElectronic": "身份证电子票下单后不可退票不可转让，因“不可抗力”导致的演出取消或延期除外。电子票需身份证实名购票，请务必准确填写信息，下单后无法更改。演出当日购票人须持本人身份证原件入场。",
+                        "timeStart": "2022-07-24 00:00:00",
+                        "timeEnd": "2022-07-17 21:30:00",
+                        "memberTimeStart": "2022-07-23 23:55:00",
+                        "timeEndExpress": "2022-07-07 18:28:40",
+                        "useStart": "2022-07-24 00:00:00",
+                        "useEnd": "2022-07-24 00:00:00",
+                        "saleRemindMinute": 60,
+                        "isStudent": 0,
+                        "isElectronic": 1,
+                        "isExpress": 0,
+                        "sysDamai": 0,
+                        "counts": 1,
+                        "status": 9,
+                        "statusExchange": 7,
+                        "isLackRegister": 0,
+                        "expressType": 0,
+                        "isTrueName": 1,
+                        "limitCount": 0,
+                        "limitCountMember": 1,
+                        "isExclusive": 0,
+                        "isMember": 1,
+                        "isMemberStatus": 0,
+                        "isAgent": 0,
+                        "isShowCode": 1,
+                        "qrCodeShowTime": "2022-07-24 18:00:00",
+                        "advanceMinuteMember": 5,
+                        "totalGeneral": 50,
+                        "totalExchange": 0
+                    }
+                ]
+            }
+        ],
+        "performancesInfo": {
+            "city_name": "杭州市",
+            "title": "2022黑撒乐队“孩子们的理想”巡演 杭州站",
+            "appStatus": 6,
+            "field_name": "酒球会  "
+        }
+    },
+    "success": true
+}
+        """
+        """
+        Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMzI2OTE3IiwiY19hdCI6IjIwMjAwODI5MTExNzM0IiwibW9iaWxlIjoiMTUxOTI3NDgwOTAiLCJuaWNrbmFtZSI6IlBPTlkiLCJ0eXBlIjoidXNlciIsImV4cCI6MTY2MDIyMDIzMywiaWF0IjoxNjU3NjI4MjMzfQ.1bBjCflIfw6dCo07sXNfTIMwJA2PqQROA306cn835g8
+        """
+        uri = f"https://kylin.zhengzai.tv/kylin/performance/partner/{preformances_id}"
+        params = {
+            "isAgent": 0
+        }
+        response = self.get(uri, params=params)
+        print('=' * 100)
+        pprint(response["data"])
 
     def pay(self):
         """
@@ -307,9 +443,9 @@ class ZhengZaiShow:
 
 
 if __name__ == '__main__':
-    # zhengzai = ZhengZaiShow()
+    zhengzai = ZhengZaiShow()
     # zhengzai.send_code(15192748090)
-    # zhengzai.login(15192748090, 595886)
-    # zhengzai.show_list(310100)
+    # zhengzai.login(15192748090, 190194)
+    zhengzai.list_show(330100)
 
     pass
